@@ -18,6 +18,12 @@ export class CircleController {
     return this.circleService.createCircle(createCircleDto);
   }
 
+  // add member to circle
+  @Post('/:id')
+  addMember(@Param('id') id: number): Promise<Circle> {
+    return this.circleService.addMember(id);
+  }
+  
   @Delete('/:id')
   deleteCircle(@Param('id') id: number): Promise<void> {
     return this.circleService.deleteCircle(id);

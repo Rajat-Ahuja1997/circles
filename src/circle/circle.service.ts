@@ -3,12 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm/repository/Repository';
 import { Circle } from './circle.entity';
 import { CreateCircleDto } from './dto/create-circle-dto';
+import { UserCircles } from './user-circle.entity';
 
 @Injectable()
 export class CircleService {
   constructor(
     @InjectRepository(Circle)
     private circleRepository: Repository<Circle>,
+    private userCircleRepository: Repository<UserCircles>,
   ) {}
 
   async getCircleById(id: number): Promise<Circle> {
@@ -37,4 +39,32 @@ export class CircleService {
       throw new NotFoundException(`Circle with ID '${id}' not found`);
     }
   }
+
+
+  // add member to circle and create a new user_circle entity
+  async addMember(id: number, userId: number): Promise<Circle> {
+    const circle = this.getCircleById(id);
+    /* check if circle exists
+    check if user exists
+    add permissioning for who can add to a circle */
+
+    const userCircle = this.userCircleRepository.create({
+      circleId: id,
+      userId: userId,
+    });
+    await this.userCircleRepository.save(userCircle);
+    return circle;
+  }
+
+  async removeMember(id: number, userId: number): Promise<void> {
+    const result = await this.userCircleRepository.delete({
+      userId: userId,
+      circleId: id,
+    });
+    if (result.affected === 0) {
+      throw new NotFoundException(
+        `User with id: ${userId} not found in circle with id: ${id}`,
+      );
+    }
+   }
 }

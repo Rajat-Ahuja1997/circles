@@ -28,7 +28,7 @@ export class Circle {
   @Column({ nullable: true })
   expiration: Date;
 
-  @ManyToMany(() => User, (user) => user.circles)
-  @JoinTable()
-  members: User[];
+  // @ManyToMany(() => User, (user) => user.circles)
+  // @JoinTable()
+  // members: number[];
 }

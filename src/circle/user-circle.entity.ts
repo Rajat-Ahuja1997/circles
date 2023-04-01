@@ -1,21 +1,13 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToMany,
-  JoinTable,
-} from 'typeorm';
-import { Circle } from './circle.entity';
-import { User } from './user.entity';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
-export class User_Circles {
+export class UserCircles {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  circle_id: number;
+  circleId: number;
 
   @Column()
-  user_id: number;
+  userId: number;
 }
