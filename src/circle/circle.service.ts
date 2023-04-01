@@ -11,7 +11,7 @@ export class CircleService {
     private circleRepository: Repository<Circle>,
   ) {}
 
-  async getCircle(id: number): Promise<Circle> {
+  async getCircleById(id: number): Promise<Circle> {
     const found = this.circleRepository.findOneBy({ id });
     if (!found) {
       throw new NotFoundException(`Circle with ID '${id}' not found`);
@@ -29,5 +29,12 @@ export class CircleService {
     });
     await this.circleRepository.save(circle);
     return circle;
+  }
+
+  async deleteCircle(id: number): Promise<void> {
+    const result = await this.circleRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Circle with ID '${id}' not found`);
+    }
   }
 }

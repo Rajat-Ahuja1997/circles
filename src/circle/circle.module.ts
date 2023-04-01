@@ -4,6 +4,6 @@ import { CircleController } from './circle.controller';
 
 @Module({
   providers: [CircleService],
-  controllers: [CircleController]
+  controllers: [CircleController],
 })
 export class CircleModule {}
