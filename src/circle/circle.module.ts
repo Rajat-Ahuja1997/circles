@@ -3,10 +3,10 @@ import { CircleService } from './circle.service';
 import { CircleController } from './circle.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Circle } from './circle.entity';
-import { UserCircles } from './user-circle.entity';
+import { UserCircle } from './user-circle.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Circle, UserCircles])],
+  imports: [TypeOrmModule.forFeature([Circle, UserCircle])],
   providers: [CircleService],
   controllers: [CircleController],
 })

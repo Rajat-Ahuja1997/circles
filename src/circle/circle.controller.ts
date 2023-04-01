@@ -12,6 +12,11 @@ export class CircleController {
     return this.circleService.getCircleById(id);
   }
 
+  @Get('/user/:id')
+  getCirclesByUserId(@Param('id') id: number): Promise<Circle[]> {
+    return this.circleService.getCirclesByUserId(id);
+  }
+
   @Post()
   create(@Body() createCircleDto: CreateCircleDto): Promise<Circle> {
     return this.circleService.createCircle(createCircleDto);
@@ -22,7 +27,7 @@ export class CircleController {
     @Param('circleId') circleId: number,
     @Body('userId') userId: number,
   ): Promise<Circle> {
-    return this.circleService.addMember(circleId, userId);
+    return this.circleService.addMemberToCircle(circleId, userId);
   }
 
   @Post('/remove/:id')
@@ -30,7 +35,7 @@ export class CircleController {
     @Param('id') circleId: number,
     @Body('userId') userId: number,
   ): Promise<void> {
-    return this.circleService.removeMember(circleId, userId);
+    return this.circleService.removeMemberFromCircle(circleId, userId);
   }
 
   @Delete('/:id')
