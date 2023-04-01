@@ -10,18 +10,12 @@ import { User } from './user.entity';
 
 @Entity()
 export class User_Circles {
-  @Column()
-  user_id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column()
   circle_id: number;
 
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @ManyToMany(() => User, (user) => user.circles)
-  user: User;
-
-  @ManyToMany(() => Circle, (circle) => circle.members)
-  circle: Circle;
+  @Column()
+  user_id: number;
 }

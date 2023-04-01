@@ -12,18 +12,15 @@ export class Post {
   @Column()
   content: string;
 
-  // Post author references user
   @Column()
-  author: User;
+  author: number;
 
-  // Post likes
   @Column()
   likes: number;
 
   @Column()
   created: Date;
 
-  // circle that can use this post
   @Column()
   circle: Circle;
 }
