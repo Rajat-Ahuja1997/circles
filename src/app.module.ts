@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CircleModule } from './circle/circle.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { CircleModule } from './circle/circle.module';
       username: 'rajatahuja',
       database: 'rajatahuja',
     }),
+    UserModule,
   ],
 })
 export class AppModule {}
