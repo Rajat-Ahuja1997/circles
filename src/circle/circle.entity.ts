@@ -11,10 +11,13 @@ import { User } from './user.entity';
 @Entity()
 export class Circle {
   @PrimaryGeneratedColumn()
-  circle_id: number;
+  id: number;
 
   @Column()
   name: string;
+
+  @Column()
+  creatorId: number;
 
   @Column()
   description: string;
