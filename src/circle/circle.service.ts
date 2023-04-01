@@ -10,6 +10,7 @@ export class CircleService {
   constructor(
     @InjectRepository(Circle)
     private circleRepository: Repository<Circle>,
+    @InjectRepository(UserCircles)
     private userCircleRepository: Repository<UserCircles>,
   ) {}
 
@@ -30,6 +31,11 @@ export class CircleService {
       expiration,
     });
     await this.circleRepository.save(circle);
+    const userCircle = this.userCircleRepository.create({
+      circleId: circle.id,
+      userId: creatorId,
+    });
+    await this.userCircleRepository.save(userCircle);
     return circle;
   }
 
@@ -56,14 +62,14 @@ export class CircleService {
     return circle;
   }
 
-  async removeMember(id: number, userId: number): Promise<void> {
+  async removeMember(circleId: number, userId: number): Promise<void> {
     const result = await this.userCircleRepository.delete({
       userId: userId,
-      circleId: id,
+      circleId: circleId,
     });
     if (result.affected === 0) {
       throw new NotFoundException(
-        `User with id: ${userId} not found in circle with id: ${id}`,
+        `User with id: ${userId} not found in circle with id: ${userId}`,
       );
     }
    }

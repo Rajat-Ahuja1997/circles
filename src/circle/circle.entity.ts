@@ -19,7 +19,7 @@ export class Circle {
   @Column()
   creatorId: number;
 
-  @Column()
+  @Column({ nullable: true })
   description: string;
 
   @CreateDateColumn()
