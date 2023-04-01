@@ -27,7 +27,7 @@ export class CircleController {
 
   @Post('/remove/:id')
   removeMember(
-    @Param('circleId') circleId: number,
+    @Param('id') circleId: number,
     @Body('userId') userId: number,
   ): Promise<void> {
     return this.circleService.removeMember(circleId, userId);

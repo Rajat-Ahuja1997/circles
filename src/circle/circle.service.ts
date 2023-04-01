@@ -31,21 +31,18 @@ export class CircleService {
       expiration,
     });
     await this.circleRepository.save(circle);
-    const userCircle = this.userCircleRepository.create({
-      circleId: circle.id,
-      userId: creatorId,
-    });
-    await this.userCircleRepository.save(userCircle);
+    this.addMember(circle.id, creatorId);
     return circle;
   }
 
   async deleteCircle(id: number): Promise<void> {
+    // delelte all user_circle entities with circleId = id
+    await this.userCircleRepository.delete({ circleId: id });
     const result = await this.circleRepository.delete(id);
     if (result.affected === 0) {
       throw new NotFoundException(`Circle with ID '${id}' not found`);
     }
   }
-
 
   // add member to circle and create a new user_circle entity
   async addMember(id: number, userId: number): Promise<Circle> {
@@ -63,14 +60,16 @@ export class CircleService {
   }
 
   async removeMember(circleId: number, userId: number): Promise<void> {
+
     const result = await this.userCircleRepository.delete({
       userId: userId,
       circleId: circleId,
     });
     if (result.affected === 0) {
       throw new NotFoundException(
-        `User with id: ${userId} not found in circle with id: ${userId}`,
+        `User with id: ${userId} not found in circle with id: ${circleId}`,
       );
     }
-   }
+    // add cleanup for when a circle has no members in user_circle --> delete circle
+  }
 }
