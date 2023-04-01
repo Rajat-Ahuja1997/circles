@@ -1,13 +1,15 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Circle } from 'src/circle/circle.entity';
+import { User } from 'src/user/user.entity';
 
 @Entity()
 export class UserCircle {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  circleId: number;
-
-  @Column()
-  userId: number;
+  @ManyToOne(() => Circle, (circle) => circle.userCircles)
+  circle: Circle;
+  
+  @ManyToOne(() => User, (user) => user.userCircles)
+  user: User;
 }

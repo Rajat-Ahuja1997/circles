@@ -2,11 +2,10 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  ManyToMany,
-  JoinTable,
   CreateDateColumn,
+  OneToMany,
 } from 'typeorm';
-import { User } from './user.entity';
+import { UserCircle } from './user-circle.entity';
 
 @Entity()
 export class Circle {
@@ -28,7 +27,6 @@ export class Circle {
   @Column({ nullable: true })
   expiration: Date;
 
-  // @ManyToMany(() => User, (user) => user.circles)
-  // @JoinTable()
-  // members: number[];
+  @OneToMany(() => UserCircle, userCircle => userCircle.circle)
+  userCircles: UserCircle[];
 }
