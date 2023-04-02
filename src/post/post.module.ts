@@ -1,0 +1,16 @@
+import { Module } from '@nestjs/common';
+import { PostService } from './post.service';
+import { PostController } from 'src/post/post.controller';
+import { CircleService } from 'src/circle/circle.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Post } from 'src/post/post.entity';
+import { Circle } from 'src/circle/circle.entity';
+import { UserCircle } from 'src/circle/user-circle.entity';
+import { User } from 'src/user/user.entity';
+
+@Module({
+  imports: [TypeOrmModule.forFeature([Post, Circle, UserCircle, User])],
+  providers: [PostService, CircleService],
+  controllers: [PostController]
+})
+export class PostModule {}

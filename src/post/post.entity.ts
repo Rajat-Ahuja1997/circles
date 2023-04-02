@@ -1,11 +1,9 @@
-import { Column, Entity } from 'typeorm';
-import { Circle } from '../circle/circle.entity';
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Circle } from 'src/circle/circle.entity';
 
-// TypeORM entity for Post, it can be liked and replied to
 @Entity()
 export class Post {
-  // Post ID
-  @Column()
+  @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
@@ -14,15 +12,14 @@ export class Post {
   @Column()
   author: number;
 
-  @Column()
+  @Column({ default: 0 })
   likes: number;
 
-  @Column()
+  @CreateDateColumn()
   created: Date;
 
-  @Column()
-  circle: Circle;
-}
+  @ManyToOne(() => Circle, circle => circle.posts)
+  circle: Circle;}
 
 /**
  * Possible tweet SQL table
@@ -39,5 +36,4 @@ export class Post {
 | reply_to_tweet_id | integer | Identifier for the tweet that this tweet is a reply to |
 | hashtags      | text       | List of hashtags used in the tweet, separated by commas |
 | mentions      | text       | List of user IDs mentioned in the tweet, separated by commas |
-
  */
