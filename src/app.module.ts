@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CircleModule } from './circle/circle.module';
-import { UserModule } from './user/user.module';
+import { CircleModule } from 'src/circle/circle.module';
+import { UserModule } from 'src/user/user.module';
+import { PostModule } from 'src/post/post.module';
 
 @Module({
   imports: [
-    CircleModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       autoLoadEntities: true,
@@ -16,6 +16,8 @@ import { UserModule } from './user/user.module';
       database: 'rajatahuja',
     }),
     UserModule,
+    PostModule,
+    CircleModule
   ],
 })
 export class AppModule {}

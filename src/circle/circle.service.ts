@@ -78,9 +78,14 @@ export class CircleService {
     if (result.affected === 0) {
       throw new NotFoundException(`Circle with ID '${id}' not found`);
     }
+    await this.circleRepository.delete(id);
   }
 
-  //get members of a circle
+  /**
+   * Get all members of a circle
+   * @param id 
+   * @returns 
+   */
   async getMembersOfCircle(id: number): Promise<User[]> {
     // TODO: protect this where you can only see it if you are a member of the circle
     const members = await this.userRepository
@@ -98,9 +103,9 @@ export class CircleService {
    * @returns circle that the user was added to
    */
   async addMemberToCircle(id: number, userId: number): Promise<Circle> {
-    const user = 
+    const user = await this.userRepository.findOneBy({ id: userId });
     const circle = await this.getCircleById(id);
-
+    
     const userCircle = this.userCircleRepository.create({
       user: user,
       circle: circle,
@@ -134,6 +139,5 @@ export class CircleService {
       );
     }
   }
-
   // TODO: add cleanup for when a circle has no members in user_circle --> delete circle --> do this in a cron job
 }

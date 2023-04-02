@@ -6,6 +6,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { UserCircle } from './user-circle.entity';
+import { Post } from 'src/post/post.entity';
 
 @Entity()
 export class Circle {
@@ -29,4 +30,7 @@ export class Circle {
 
   @OneToMany(() => UserCircle, userCircle => userCircle.circle)
   userCircles: UserCircle[];
+
+  @OneToMany(() => Post, post => post.circle)
+  posts: Post[];
 }
