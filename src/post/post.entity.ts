@@ -18,7 +18,7 @@ export class Post {
   @CreateDateColumn()
   created: Date;
 
-  @ManyToOne(() => Circle, circle => circle.posts)
+  @ManyToOne(() => Circle, circle => circle.posts, { eager: true })
   circle: Circle;}
 
 /**
