@@ -14,10 +14,34 @@ export class PostService {
     private readonly circleService: CircleService,
   ) {}
 
+  /**
+   * Get all posts in a circle
+   * @param circleId
+   * @returns array of posts 
+   */
+  async getPostsByCircleId(circleId: number): Promise<Post[]> {
+    const posts = await this.postRepository
+      .createQueryBuilder('post')
+      .innerJoin('post.circle', 'circle')
+      .where('circle.id = :circleId', { circleId: circleId })
+      .getMany();
+    return posts;
+  }
+
+  /**
+   * Get a post by id
+   * @param id 
+   * @returns post  
+   */
   async getPostById(id: number): Promise<Post> {
     return await this.postRepository.findOneBy({ id });
   }
 
+  /**
+   * Create a post
+   * @param createPostDto 
+   * @returns created post
+   */
   async createPost(createPostDto: CreatePostDto): Promise<Post> {
     const { content, author, circleId } = createPostDto;
     const circle = await this.circleService.getCircleById(circleId);
