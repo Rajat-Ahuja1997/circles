@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CircleModule } from 'src/circle/circle.module';
 import { UserModule } from 'src/user/user.module';
 import { PostModule } from 'src/post/post.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { PostModule } from 'src/post/post.module';
     }),
     UserModule,
     PostModule,
-    CircleModule
+    CircleModule,
+    AuthModule
   ],
 })
 export class AppModule {}
