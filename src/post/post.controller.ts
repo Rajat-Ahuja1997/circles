@@ -12,6 +12,11 @@ export class PostController {
     return this.postService.createPost(createPostDto);
   }
 
+  @Get('/user/:id')
+  getPostsByUserId(@Param('id') id: number): Promise<CirclePost[]> {
+    return this.postService.getPostsByUserId(id);
+  }
+
   @Get('/circle/:id')
   getPostsByCircleId(@Param('id') id: number): Promise<CirclePost[]> {
     return this.postService.getPostsByCircleId(id);

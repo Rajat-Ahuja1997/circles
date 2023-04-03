@@ -1,5 +1,6 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Circle } from 'src/circle/circle.entity';
+import { User } from 'src/user/user.entity';
 
 @Entity()
 export class Post {
@@ -9,14 +10,14 @@ export class Post {
   @Column()
   content: string;
 
-  @Column()
-  author: number;
-
   @Column({ default: 0 })
   likes: number;
 
   @CreateDateColumn()
   created: Date;
+
+  @ManyToOne(() => User, user => user.posts, { eager: true })
+  author: User;
 
   @ManyToOne(() => Circle, circle => circle.posts, { eager: true })
   circle: Circle;}
