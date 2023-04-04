@@ -1,6 +1,14 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Circle } from 'src/circle/circle.entity';
 import { User } from 'src/user/user.entity';
+import { Exclude, Transform } from 'class-transformer';
 
 @Entity()
 export class Post {
@@ -16,11 +24,14 @@ export class Post {
   @CreateDateColumn()
   created: Date;
 
-  @ManyToOne(() => User, user => user.posts, { eager: true })
+  @ManyToOne(() => User, (user) => user.posts, { eager: true })
+  @Transform(({ value }) => ({ id: value.id }))
   author: User;
 
-  @ManyToOne(() => Circle, circle => circle.posts, { eager: true })
-  circle: Circle;}
+  @ManyToOne(() => Circle, (circle) => circle.posts, { eager: true })
+  @Transform(({ value }) => ({ id: value.id }))
+  circle: Circle;
+}
 
 /**
  * Possible tweet SQL table

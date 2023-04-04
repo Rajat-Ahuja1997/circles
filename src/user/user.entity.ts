@@ -22,9 +22,9 @@ export class User {
   @CreateDateColumn()
   created: Date;
 
-  @OneToMany(() => UserCircle, userCircle => userCircle.user)
+  @OneToMany(() => UserCircle, (userCircle) => userCircle.user)
   userCircles: UserCircle[];
 
-  @OneToMany(() => Post, post => post.author)
+  @OneToMany(() => Post, (post) => post.author)
   posts: Post[];
 }

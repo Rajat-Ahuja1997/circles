@@ -31,8 +31,8 @@ export class CircleService {
   }
 
   /**
-   * @param id 
-   * @returns circle with id 
+   * @param id
+   * @returns circle with id
    */
   async getCircleById(id: number): Promise<Circle> {
     const found = await this.circleRepository.findOneBy({ id });

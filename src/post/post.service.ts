@@ -18,34 +18,37 @@ export class PostService {
 
   //TODO: Test this
   async getPostsByUserId(userId: number): Promise<Post[]> {
-    const posts = await this.postRepository
-      .createQueryBuilder('post')
-      .innerJoin('post.authorId', 'user')
-      .where('user.id = :userId', { userId: userId })
-      .getMany();
+    const posts = await this.postRepository.find({
+      where: {
+        author: { id: userId },
+      },
+      relations: ['circle'],
+    });
     return posts;
   }
 
   /**
    * Get all posts in a circle
    * @param circleId
-   * @returns array of posts 
+   * @returns array of posts
    */
   async getPostsByCircleId(circleId: number): Promise<Post[]> {
     const circle = await this.circleService.getCircleById(circleId);
     // check for userId param and make sure user is in circle
-    const posts = await this.postRepository
-      .createQueryBuilder('post')
-      .innerJoin('post.circle', 'circle')
-      .where('circle.id = :circleId', { circleId: circleId })
-      .getMany();
+
+    const posts = await this.postRepository.find({
+      where: {
+        circle: { id: circleId },
+      },
+      relations: ['circle', 'author'],
+    });
     return posts;
   }
 
   /**
    * Get a post by id
-   * @param id 
-   * @returns post  
+   * @param id
+   * @returns post
    */
   async getPostById(id: number): Promise<Post> {
     return await this.postRepository.findOneBy({ id });
@@ -53,7 +56,7 @@ export class PostService {
 
   /**
    * Create a post
-   * @param createPostDto 
+   * @param createPostDto
    * @returns created post
    * @throws UnauthorizedException if user is not a member of the circle
    */
@@ -64,15 +67,17 @@ export class PostService {
 
     const user = this.userInCircle(authorId, users);
     if (!user) {
-      throw new UnauthorizedException('You are not authorized to post in this circle');
+      throw new UnauthorizedException(
+        'You are not authorized to post in this circle',
+      );
     }
 
     const post = this.postRepository.create({
       content,
       author: user,
-      circle
+      circle,
     });
-    
+
     await this.postRepository.save(post);
     return post;
   }
@@ -88,25 +93,5 @@ export class PostService {
       }
     }
     return null;
-  }
-
-  /**  @Column()
-  id: number;
-
-  @Column()
-  content: string;
-
-  @Column()
-  author: number;
-
-  @Column()
-  likes: number;
-
-  @Column()
-  created: Date;
-
-  @Column()
-  circle: Circle;
- */
-
+  };
 }

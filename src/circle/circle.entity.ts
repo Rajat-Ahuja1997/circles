@@ -28,9 +28,9 @@ export class Circle {
   @Column({ nullable: true })
   expiration: Date;
 
-  @OneToMany(() => UserCircle, userCircle => userCircle.circle)
+  @OneToMany(() => UserCircle, (userCircle) => userCircle.circle)
   userCircles: UserCircle[];
 
-  @OneToMany(() => Post, post => post.circle)
+  @OneToMany(() => Post, (post) => post.circle)
   posts: Post[];
 }
