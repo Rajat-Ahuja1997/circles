@@ -18,10 +18,10 @@ export class CircleService {
   ) {}
 
   /**
-   * @param userId 
-   * @returns circles that the user is a member of 
+   * @param userId
+   * @returns circles that the user is a member of
    */
-  async getCirclesByUserId(userId: number): Promise<Circle[]> {
+  async getCirclesByUserId(userId: number): Promise<Circle[]> {    
     const circles = await this.circleRepository
       .createQueryBuilder('circle')
       .innerJoin('user_circle', 'uc', 'uc.circleId = circle.id')
@@ -37,20 +37,22 @@ export class CircleService {
   async getCircleById(id: number): Promise<Circle> {
     const found = await this.circleRepository.findOneBy({ id });
     if (!found) {
-      throw new NotFoundException(`Circle with ID '${id}' not found`);      
+      throw new NotFoundException(`Circle with ID '${id}' not found`);
     }
     return found;
   }
 
   /**
    * Creates a new circle and adds the creator as a member
-   * @param createCircleDto 
-   * @returns 
+   * @param createCircleDto
+   * @returns
    */
   async createCircle(createCircleDto: CreateCircleDto): Promise<Circle> {
     const { creatorId, name, description, expiration } = createCircleDto;
+    const user = await this.userRepository.findOneBy({ id: creatorId });
+    // TODO: Check if user exists
     const circle = this.circleRepository.create({
-      creatorId,
+      creator: user,
       name,
       description,
       expiration,
@@ -83,8 +85,8 @@ export class CircleService {
 
   /**
    * Get all members of a circle
-   * @param id 
-   * @returns 
+   * @param id
+   * @returns
    */
   async getMembersOfCircle(id: number): Promise<User[]> {
     // TODO: protect this where you can only see it if you are a member of the circle
@@ -98,14 +100,14 @@ export class CircleService {
 
   /**
    * Adds a user to a circle and creates a new user_circle relation
-   * @param id 
-   * @param userId 
+   * @param id
+   * @param userId
    * @returns circle that the user was added to
    */
   async addMemberToCircle(id: number, userId: number): Promise<Circle> {
     const user = await this.userRepository.findOneBy({ id: userId });
     const circle = await this.getCircleById(id);
-    
+
     const userCircle = this.userCircleRepository.create({
       user: user,
       circle: circle,
@@ -124,13 +126,15 @@ export class CircleService {
    * @param userId
    * @throws NotFoundException if user is not a member of the circle
    * */
-  async removeMemberFromCircle(circleId: number, userId: number): Promise<void> {
+  async removeMemberFromCircle(
+    circleId: number,
+    userId: number,
+  ): Promise<void> {
     const result = await this.userCircleRepository
       .createQueryBuilder()
       .delete()
       .from(UserCircle)
-      .where('circleId = :circleId', { circleId: circleId })
-      .andWhere('userId = :userId', { userId: userId })
+      .where({ circle: circleId, user: userId })
       .execute();
 
     if (result.affected === 0) {

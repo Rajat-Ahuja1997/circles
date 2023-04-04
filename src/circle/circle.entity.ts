@@ -4,9 +4,12 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   OneToMany,
+  ManyToOne,
 } from 'typeorm';
-import { UserCircle } from './user-circle.entity';
+import { UserCircle } from 'src/circle/user-circle.entity';
 import { Post } from 'src/post/post.entity';
+import { User } from 'src/user/user.entity';
+import { Transform } from 'class-transformer';
 
 @Entity()
 export class Circle {
@@ -16,8 +19,9 @@ export class Circle {
   @Column()
   name: string;
 
-  @Column()
-  creatorId: number;
+  @ManyToOne(() => User, (user) => user.posts, { eager: true })
+  @Transform(({ value }) => ({ id: value.id }))
+  creator: User;
 
   @Column({ nullable: true })
   description: string;

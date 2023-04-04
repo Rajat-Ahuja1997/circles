@@ -2,32 +2,37 @@ import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { Circle } from './circle.entity';
 import { CircleService } from './circle.service';
 import { CreateCircleDto } from './dto/create-circle-dto';
+import { plainToInstance } from 'class-transformer';
 
 @Controller('circle')
 export class CircleController {
   constructor(private circleService: CircleService) {}
 
   @Get('/:id')
-  getCircleById(@Param('id') id: number): Promise<Circle> {
-    return this.circleService.getCircleById(id);
+  async getCircleById(@Param('id') id: number): Promise<Circle> {
+    const circle = await this.circleService.getCircleById(id);
+    return plainToInstance(Circle, circle);
   }
 
   @Get('/user/:id')
-  getCirclesByUserId(@Param('id') id: number): Promise<Circle[]> {
-    return this.circleService.getCirclesByUserId(id);
+  async getCirclesByUserId(@Param('id') id: number): Promise<Circle[]> {
+    const circles = await this.circleService.getCirclesByUserId(id);
+    return circles.map((circle) => plainToInstance(Circle, circle));
   }
 
   @Post()
-  create(@Body() createCircleDto: CreateCircleDto): Promise<Circle> {
-    return this.circleService.createCircle(createCircleDto);
+  async create(@Body() createCircleDto: CreateCircleDto): Promise<Circle> {
+    const circle = await this.circleService.createCircle(createCircleDto);
+    return plainToInstance(Circle, circle);
   }
 
   @Post('/add/:id')
-  addMember(
-    @Param('circleId') circleId: number,
+  async addMember(
+    @Param('id') circleId: number,
     @Body('userId') userId: number,
   ): Promise<Circle> {
-    return this.circleService.addMemberToCircle(circleId, userId);
+    const circle = await this.circleService.addMemberToCircle(circleId, userId);
+    return plainToInstance(Circle, circle);
   }
 
   @Post('/remove/:id')
