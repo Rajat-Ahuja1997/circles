@@ -1,10 +1,20 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { Circle } from './circle.entity';
-import { CircleService } from './circle.service';
-import { CreateCircleDto } from './dto/create-circle-dto';
+import { CircleService } from 'src/circle/circle.service';
+import { CreateCircleDto } from 'src/circle/dto/create-circle-dto';
 import { plainToInstance } from 'class-transformer';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('circle')
+@UseGuards(AuthGuard)
 export class CircleController {
   constructor(private circleService: CircleService) {}
 
@@ -31,6 +41,7 @@ export class CircleController {
     @Param('id') circleId: number,
     @Body('userId') userId: number,
   ): Promise<Circle> {
+    // extract userId from bearer token
     const circle = await this.circleService.addMemberToCircle(circleId, userId);
     return plainToInstance(Circle, circle);
   }

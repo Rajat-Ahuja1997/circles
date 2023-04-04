@@ -4,6 +4,8 @@ import { CircleModule } from 'src/circle/circle.module';
 import { UserModule } from 'src/user/user.module';
 import { PostModule } from 'src/post/post.module';
 import { AuthModule } from './auth/auth.module';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from './auth/auth.guard';
 
 @Module({
   imports: [
@@ -19,7 +21,13 @@ import { AuthModule } from './auth/auth.module';
     UserModule,
     PostModule,
     CircleModule,
-    AuthModule
+    AuthModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
   ],
 })
 export class AppModule {}

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm/repository/Repository';
 import { Circle } from './circle.entity';
@@ -21,7 +25,7 @@ export class CircleService {
    * @param userId
    * @returns circles that the user is a member of
    */
-  async getCirclesByUserId(userId: number): Promise<Circle[]> {    
+  async getCirclesByUserId(userId: number): Promise<Circle[]> {
     const circles = await this.circleRepository
       .createQueryBuilder('circle')
       .innerJoin('user_circle', 'uc', 'uc.circleId = circle.id')
@@ -130,6 +134,8 @@ export class CircleService {
     circleId: number,
     userId: number,
   ): Promise<void> {
+    //TODO: check that user is a creator of the circle
+
     const result = await this.userCircleRepository
       .createQueryBuilder()
       .delete()
