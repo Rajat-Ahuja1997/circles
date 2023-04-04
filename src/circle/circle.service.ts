@@ -5,10 +5,10 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm/repository/Repository';
-import { Circle } from './circle.entity';
-import { CreateCircleDto } from './dto/create-circle-dto';
-import { UserCircle } from './user-circle.entity';
-import { User } from '../user/user.entity';
+import { Circle } from 'src/circle/circle.entity';
+import { CreateCircleDto } from 'src/circle/dto/create-circle-dto';
+import { UserCircle } from 'src/circle/user-circle.entity';
+import { User } from 'src/user/user.entity';
 
 @Injectable()
 export class CircleService {

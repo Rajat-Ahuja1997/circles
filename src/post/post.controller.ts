@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Param, Get, Post } from '@nestjs/common';
-import { PostService } from './post.service';
-import { CreatePostDto } from './dto/create-post-dto';
-import { Post as CirclePost } from './post.entity';
 import { plainToInstance } from 'class-transformer';
+import { PostService } from 'src/post/post.service';
+import { CreatePostDto } from 'src/post/dto/create-post-dto';
+import { Post as CirclePost } from 'src/post/post.entity';
 
 @Controller('post')
 export class PostController {

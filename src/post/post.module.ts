@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { PostService } from './post.service';
+import { PostService } from 'src/post/post.service';
 import { PostController } from 'src/post/post.controller';
 import { CircleService } from 'src/circle/circle.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
