@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { UserCircle } from 'src/circle/user-circle.entity';
 import { Post } from 'src/post/post.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class User {
@@ -17,6 +18,7 @@ export class User {
   username: string;
 
   @Column()
+  @Exclude()
   password: string;
 
   @CreateDateColumn()

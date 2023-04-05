@@ -63,7 +63,7 @@ export class PostService {
   async createPost(createPostDto: CreatePostDto): Promise<Post> {
     const { content, authorId, circleId } = createPostDto;
     const circle: Circle = await this.circleService.getCircleById(circleId);
-    const users: User[] = await this.circleService.getMembersOfCircle(circleId);
+    const users: User[] = await this.circleService.getMembersOfCircle(new User(), circleId);
 
     const user = this.userInCircle(authorId, users);
     if (!user) {

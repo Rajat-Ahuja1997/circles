@@ -25,7 +25,7 @@ export class CircleService {
    * @param userId
    * @returns circles that the user is a member of
    */
-  async getCirclesByUserId(userId: number): Promise<Circle[]> {
+  async getCirclesByUserId(requester: User, userId: number): Promise<Circle[]> {
     const circles = await this.circleRepository
       .createQueryBuilder('circle')
       .innerJoin('user_circle', 'uc', 'uc.circleId = circle.id')
@@ -51,18 +51,26 @@ export class CircleService {
    * @param createCircleDto
    * @returns
    */
-  async createCircle(createCircleDto: CreateCircleDto): Promise<Circle> {
-    const { creatorId, name, description, expiration } = createCircleDto;
-    const user = await this.userRepository.findOneBy({ id: creatorId });
-    // TODO: Check if user exists
+  async createCircle(
+    requester: User,
+    createCircleDto: CreateCircleDto,
+  ): Promise<Circle> {
+    const { name, description, expiration } = createCircleDto;
     const circle = this.circleRepository.create({
-      creator: user,
+      creator: requester,
       name,
       description,
       expiration,
     });
+
     await this.circleRepository.save(circle);
-    await this.addMemberToCircle(circle.id, creatorId);
+
+    const userCircle = this.userCircleRepository.create({
+      user: requester,
+      circle: circle,
+    });
+    await this.userCircleRepository.save(userCircle);
+    // await this.addMemberToCircle(requester, circle.id, requester.id);
     return circle;
   }
 
@@ -73,7 +81,15 @@ export class CircleService {
    * @throws NotFoundException if user does not exist
    * @throws NotFoundException if user is not a member of the circle
    * */
-  async deleteCircle(id: number): Promise<void> {
+  async deleteCircle(requester: User, id: number): Promise<void> {
+    console.log(requester)
+    const circle = await this.getCircleById(id);
+    console.log(circle)
+    if (circle.creator.id !== requester.id) {
+      throw new UnauthorizedException(
+        'You do not have permission to delete this circle.',
+      );
+    }
     const result = await this.userCircleRepository
       .createQueryBuilder()
       .delete()
@@ -92,7 +108,7 @@ export class CircleService {
    * @param id
    * @returns
    */
-  async getMembersOfCircle(id: number): Promise<User[]> {
+  async getMembersOfCircle(requester: User, id: number): Promise<User[]> {
     // TODO: protect this where you can only see it if you are a member of the circle
     const members = await this.userRepository
       .createQueryBuilder('user')
@@ -108,9 +124,22 @@ export class CircleService {
    * @param userId
    * @returns circle that the user was added to
    */
-  async addMemberToCircle(id: number, userId: number): Promise<Circle> {
+  async addMemberToCircle(
+    requester: User,
+    id: number,
+    userId: number,
+  ): Promise<Circle> {
+    const circle = await this.getCircleById(id); //FIX THIS
+    if (circle.creator.id !== requester.id) {
+      throw new UnauthorizedException(
+        'You do not have permission to add a member to this circle.',
+      );
+    }
+
     const user = await this.userRepository.findOneBy({ id: userId });
-    const circle = await this.getCircleById(id);
+    if (!user) {
+      throw new NotFoundException(`User with ID '${userId}' not found`);
+    }
 
     const userCircle = this.userCircleRepository.create({
       user: user,
@@ -119,9 +148,6 @@ export class CircleService {
 
     await this.userCircleRepository.save(userCircle);
     return circle;
-
-    /* TODO: check if user exists check if user exists
-    add permissioning for who can add to a circle */
   }
 
   /**
@@ -131,11 +157,17 @@ export class CircleService {
    * @throws NotFoundException if user is not a member of the circle
    * */
   async removeMemberFromCircle(
+    requester: User,
     circleId: number,
     userId: number,
   ): Promise<void> {
+    const circle = await this.getCircleById(circleId);
+    if (circle.creator.id !== requester.id) {
+      throw new UnauthorizedException(
+        'You do not have permission to remove a member from this circle.',
+      );
+    }
     //TODO: check that user is a creator of the circle
-
     const result = await this.userCircleRepository
       .createQueryBuilder()
       .delete()
