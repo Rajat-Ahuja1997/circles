@@ -1,10 +1,20 @@
-import { Body, Controller, Delete, Param, Get, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Param,
+  Get,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { PostService } from 'src/post/post.service';
 import { CreatePostDto } from 'src/post/dto/create-post-dto';
 import { Post as CirclePost } from 'src/post/post.entity';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('post')
+@UseGuards(AuthGuard)
 export class PostController {
   constructor(private postService: PostService) {}
 

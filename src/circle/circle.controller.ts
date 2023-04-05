@@ -86,7 +86,6 @@ export class CircleController {
     @GetUser() requester: User,
     @Param('id') id: number,
   ): Promise<void> {
-    console.log(requester);
     return this.circleService.deleteCircle(requester, id);
   }
 }
