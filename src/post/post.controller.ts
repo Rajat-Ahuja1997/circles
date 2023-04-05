@@ -33,14 +33,17 @@ export class PostController {
   }
 
   @Get('/user/:id')
-  async getPostsByUserId(@Param('id') id: number): Promise<CirclePost[]> {
-    const post = await this.postService.getPostsByUserId(id);
+  async getPostsByUserId(@GetUser() requester: User): Promise<CirclePost[]> {
+    const post = await this.postService.getPostsByUserId(requester);
     return plainToInstance(CirclePost, post);
   }
 
   @Get('/circle/:id')
-  async getPostsByCircleId(@Param('id') id: number): Promise<CirclePost[]> {
-    const posts = await this.postService.getPostsByCircleId(id);
+  async getPostsByCircleId(
+    @GetUser() requester: User,
+    @Param('id') id: number,
+  ): Promise<CirclePost[]> {
+    const posts = await this.postService.getPostsByCircleId(requester, id);
     return posts.map((post) => plainToInstance(CirclePost, post));
   }
 

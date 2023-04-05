@@ -25,10 +25,10 @@ export class PostService {
   ) {}
 
   //TODO: Test this
-  async getPostsByUserId(userId: number): Promise<Post[]> {
+  async getPostsByUserId(requester: User): Promise<Post[]> {
     const posts = await this.postRepository.find({
       where: {
-        author: { id: userId },
+        author: { id: requester.id },
       },
       relations: ['circle'],
     });
@@ -52,7 +52,7 @@ export class PostService {
 
     if (!user) {
       throw new UnauthorizedException(
-        'You are not authorized to view this post',
+        'You are not authorized to view these posts',
       );
     }
 
@@ -120,7 +120,7 @@ export class PostService {
   }
 
   async deletePost(requester: User, id: number): Promise<void> {
-    const post = await this.getPostById(id);
+    const post = await this.getPostById(requester, id);
     if (post.author.id !== requester.id) {
       throw new UnauthorizedException(
         'You are not authorized to delete this post',
