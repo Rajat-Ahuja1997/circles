@@ -70,7 +70,6 @@ export class CircleService {
       circle: circle,
     });
     await this.userCircleRepository.save(userCircle);
-    // await this.addMemberToCircle(requester, circle.id, requester.id);
     return circle;
   }
 
@@ -82,9 +81,7 @@ export class CircleService {
    * @throws NotFoundException if user is not a member of the circle
    * */
   async deleteCircle(requester: User, id: number): Promise<void> {
-    console.log(requester)
     const circle = await this.getCircleById(id);
-    console.log(circle)
     if (circle.creator.id !== requester.id) {
       throw new UnauthorizedException(
         'You do not have permission to delete this circle.',
@@ -126,11 +123,17 @@ export class CircleService {
    */
   async addMemberToCircle(
     requester: User,
-    id: number,
+    circleId: number,
     userId: number,
   ): Promise<Circle> {
-    const circle = await this.getCircleById(id); //FIX THIS
-    if (circle.creator.id !== requester.id) {
+    const circle = await this.getCircleById(circleId);
+
+    const userInCircle = await this.userCircleRepository.findOneBy({
+      circle: circle,
+      user: requester,
+    });
+
+    if (!userInCircle) {
       throw new UnauthorizedException(
         'You do not have permission to add a member to this circle.',
       );
@@ -167,7 +170,6 @@ export class CircleService {
         'You do not have permission to remove a member from this circle.',
       );
     }
-    //TODO: check that user is a creator of the circle
     const result = await this.userCircleRepository
       .createQueryBuilder()
       .delete()
@@ -182,4 +184,13 @@ export class CircleService {
     }
   }
   // TODO: add cleanup for when a circle has no members in user_circle --> delete circle --> do this in a cron job
+
+  private userInCircle = (userId: number, users: User[]): boolean => {
+    for (let i = 0; i < users.length; i++) {
+      if (users[i].id == userId) {
+        return true;
+      }
+    }
+    return false;
+  };
 }

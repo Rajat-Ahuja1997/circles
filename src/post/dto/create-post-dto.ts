@@ -5,8 +5,5 @@ export class CreatePostDto {
   content: string;
 
   @IsNotEmpty()
-  authorId: number;
-
-  @IsNotEmpty()
-  circleId: number; 
+  circleId: number;
 }

@@ -60,12 +60,18 @@ export class PostService {
    * @returns created post
    * @throws UnauthorizedException if user is not a member of the circle
    */
-  async createPost(createPostDto: CreatePostDto): Promise<Post> {
-    const { content, authorId, circleId } = createPostDto;
+  async createPost(
+    requester: User,
+    createPostDto: CreatePostDto,
+  ): Promise<Post> {
+    const { content, circleId } = createPostDto;
     const circle: Circle = await this.circleService.getCircleById(circleId);
-    const users: User[] = await this.circleService.getMembersOfCircle(new User(), circleId);
+    const users: User[] = await this.circleService.getMembersOfCircle(
+      new User(),
+      circleId,
+    );
 
-    const user = this.userInCircle(authorId, users);
+    const user = this.userInCircle(requester.id, users);
     if (!user) {
       throw new UnauthorizedException(
         'You are not authorized to post in this circle',
@@ -82,7 +88,13 @@ export class PostService {
     return post;
   }
 
-  async deletePost(id: number): Promise<void> {
+  async deletePost(requester: User, id: number): Promise<void> {
+    const post = await this.getPostById(id);
+    if (post.author.id !== requester.id) {
+      throw new UnauthorizedException(
+        'You are not authorized to delete this post',
+      );
+    }
     await this.postRepository.delete(id);
   }
 

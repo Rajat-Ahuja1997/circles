@@ -37,7 +37,6 @@ export class CircleController {
     @Param('id') id: number,
     @GetUser() requester: User,
   ): Promise<Circle[]> {
-    console.log(requester);
     const circles = await this.circleService.getCirclesByUserId(requester, id);
     return circles.map((circle) => plainToInstance(Circle, circle));
   }

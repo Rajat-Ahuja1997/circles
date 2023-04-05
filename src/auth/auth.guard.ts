@@ -12,7 +12,7 @@ import { IS_PUBLIC_KEY } from 'src/is-public';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private jwtService: JwtService,  private reflector: Reflector) {}
+  constructor(private jwtService: JwtService, private reflector: Reflector) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
@@ -37,7 +37,6 @@ export class AuthGuard implements CanActivate {
       // so that we can access it in our route handlers
       request['user'] = payload;
     } catch {
-      console.log('throwing exception')
       throw new UnauthorizedException('thrown here');
     }
     return true;

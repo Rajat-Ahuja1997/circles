@@ -12,8 +12,6 @@ export class AuthController {
   @Public()
   signin(@Body() signInDto: SignInDto) {
     const { username, password } = signInDto;
-    console.log(username);
-    console.log(password);
 
     return this.authService.signin(username, password);
   }
