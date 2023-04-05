@@ -1,4 +1,9 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Post } from 'src/post/post.entity';
@@ -6,6 +11,7 @@ import { CircleService } from 'src/circle/circle.service';
 import { CreatePostDto } from 'src/post/dto/create-post-dto';
 import { User } from 'src/user/user.entity';
 import { Circle } from 'src/circle/circle.entity';
+import { UserCircle } from 'src/circle/user-circle.entity';
 
 @Injectable()
 export class PostService {
@@ -14,6 +20,8 @@ export class PostService {
     private postRepository: Repository<Post>,
     @Inject(CircleService)
     private readonly circleService: CircleService,
+    @InjectRepository(UserCircle)
+    private userCircleRepository: Repository<UserCircle>,
   ) {}
 
   //TODO: Test this
@@ -32,9 +40,21 @@ export class PostService {
    * @param circleId
    * @returns array of posts
    */
-  async getPostsByCircleId(circleId: number): Promise<Post[]> {
+  async getPostsByCircleId(requester: User, circleId: number): Promise<Post[]> {
     const circle = await this.circleService.getCircleById(circleId);
-    // check for userId param and make sure user is in circle
+    if (!circle) {
+      throw new NotFoundException(`Circle with ID '${circleId}' not found`);
+    }
+    const user = await this.userCircleRepository.findOneBy({
+      circle: circle,
+      user: requester,
+    });
+
+    if (!user) {
+      throw new UnauthorizedException(
+        'You are not authorized to view this post',
+      );
+    }
 
     const posts = await this.postRepository.find({
       where: {
@@ -50,8 +70,19 @@ export class PostService {
    * @param id
    * @returns post
    */
-  async getPostById(id: number): Promise<Post> {
-    return await this.postRepository.findOneBy({ id });
+  async getPostById(requester: User, id: number): Promise<Post> {
+    const post = await this.postRepository.findOneBy({ id });
+    const users = await this.circleService.getMembersOfCircle(
+      new User(),
+      post.circle.id,
+    );
+
+    if (!this.userInCircle(requester.id, users)) {
+      throw new UnauthorizedException(
+        'You are not authorized to view this post',
+      );
+    }
+    return post;
   }
 
   /**
@@ -66,15 +97,15 @@ export class PostService {
   ): Promise<Post> {
     const { content, circleId } = createPostDto;
     const circle: Circle = await this.circleService.getCircleById(circleId);
-    const users: User[] = await this.circleService.getMembersOfCircle(
-      new User(),
-      circleId,
-    );
 
-    const user = this.userInCircle(requester.id, users);
+    const user = await this.userCircleRepository.findOneBy({
+      circle: circle,
+      user: requester,
+    });
+
     if (!user) {
       throw new UnauthorizedException(
-        'You are not authorized to post in this circle',
+        'You are not authorized to create a post in this circle',
       );
     }
 

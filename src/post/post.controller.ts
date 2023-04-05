@@ -45,8 +45,11 @@ export class PostController {
   }
 
   @Get('/:id')
-  async getPost(@Param('id') id: number): Promise<CirclePost> {
-    const post = await this.postService.getPostById(id);
+  async getPost(
+    @GetUser() requester: User,
+    @Param('id') id: number,
+  ): Promise<CirclePost> {
+    const post = await this.postService.getPostById(requester, id);
 
     return plainToInstance(CirclePost, post);
   }
